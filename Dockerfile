@@ -17,6 +17,10 @@ RUN \
     sudo apt-get update; \
     \
     sudo apt-get -y install postgresql
+# postgresql setting
+RUN \
+    service postgresql status; \
+    /etc/init.d/postgresql restart;
 
 # install python
 RUN \

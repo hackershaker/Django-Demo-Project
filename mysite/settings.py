@@ -10,7 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import json
+import os
 from pathlib import Path
+
+from django.conf.global_settings import SECRET_KEY
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,9 +24,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-j8(tq3y^bj#wp+q_e5o%*3qyjlvj&3a0xxo6@md=@g@3t$)(lg"
 
+# SECURITY WARNING: keep the secret key used in production secret!
+secret_file = os.path.join(BASE_DIR, "secretkey.json")
+with open(secret_file, "r") as f:
+    secrets = json.loads(f.read())
+
+
+def getSecret(setting, secrets=secrets):
+    try:
+        return secrets[setting]
+    except:
+        error_msg = "Set the {} environment variable".format(setting)
+        raise ImproperlyConfigured(error_msg)
+
+
+SECRET_KEY = getSecret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -77,11 +95,11 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": 'pollsappdb',
-        "USER": 'root',
-        "PASSWORD": 'root',
-        'HOST': 'localhost', # empty string means localhost
-        'PORT': 5432,
+        "NAME": "pollsappdb",
+        "USER": "root",
+        "PASSWORD": "root",
+        "HOST": "localhost",  # empty string means localhost
+        "PORT": 5432,
     }
 }
 
