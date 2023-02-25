@@ -6,21 +6,29 @@ RUN \
     apt-get install -yq tzdata; \
     ln -fs /usr/share/zoneinfo/Asia/Seoul /etc/localtime;
 
-# install postgresql
+# install ubuntu tools
 RUN \
     apt-get update; \
     apt-get install -y sudo; \
-    sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'; \
-    \
-    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -; \
-    \
+    sudo apt-get install net-tools; \
     sudo apt-get update; \
-    \
-    sudo apt-get -y install postgresql
-# postgresql setting
+    sudo apt-get dist-updrade -y; \
+    sudo apt-get install gnupg2 wget vim -y; \
+    sudo apt-get install -y systemd; \
+    apt-get install -y lsb-release 
+
+# postgresql initialzation
+RUN  mkdir /docker-entrypoint-initdb.d;
+COPY init.sh /docker-entrypoint-initdb.d/
+
+# enable postgresql 15 package repository
 RUN \
-    service postgresql status; \
-    /etc/init.d/postgresql restart;
+    sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'; \
+    wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo tee /etc/apt/trusted.gpg.d/pgdg.asc &>/dev/null; \
+    sudo apt update -y;
+
+# install postgresql 15 database server and client
+RUN sudo apt-get install postgresql postgresql-client -y
 
 # install python
 RUN \
@@ -45,4 +53,4 @@ RUN \
 
 # copy all src files
 
-CMD [ "python3", "manage.py", "runserver" ]
+CMD ./start.sh
