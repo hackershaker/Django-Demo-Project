@@ -1,0 +1,43 @@
+version: "2"
+
+services:
+  db:
+    container_name: database
+    build:
+      context: ./db/
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+    - POSTGRES_USER=$POSTGRES_USER
+    - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    - DBUSER=$DBUSER
+    - DBUSER_PASSWD=$DBUSER_PASSWD
+    - DB=$DB
+    ports:
+    - "5432:5432"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "$POSTGRES_USER"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    networks:
+      - default_network
+
+  django:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - default_network
+
+networks: 
+  default_network:
+    driver: bridge
