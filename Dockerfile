@@ -15,20 +15,7 @@ RUN \
     sudo apt-get dist-updrade -y; \
     sudo apt-get install gnupg2 wget vim -y; \
     sudo apt-get install -y systemd; \
-    apt-get install -y lsb-release 
-
-# postgresql initialzation
-RUN  mkdir /docker-entrypoint-initdb.d;
-COPY init.sh /docker-entrypoint-initdb.d/
-
-# enable postgresql 15 package repository
-RUN \
-    sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'; \
-    wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo tee /etc/apt/trusted.gpg.d/pgdg.asc &>/dev/null; \
-    sudo apt update -y;
-
-# install postgresql 15 database server and client
-RUN sudo apt-get install postgresql postgresql-client -y
+    apt-get install -y lsb-release
 
 # install python
 RUN \
@@ -39,6 +26,7 @@ RUN \
     sudo apt -y install python3.11; \
     sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1;
 
+# copy all src files
 COPY . .
 # install packages
 RUN \
@@ -49,8 +37,6 @@ RUN \
     python3 -m pip --version; \ 
     python -m pip3 install --upgrade pip; \
     sudo apt-get -y install python3.11-distutils; \
-    pip3 install -r requirements.txt; 
-
-# copy all src files
+    pip3 install -r requirements.txt;
 
 CMD ./start.sh
