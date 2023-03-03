@@ -43,7 +43,7 @@ SECRET_KEY = getSecret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost"]
 
 
 # Application definition
@@ -98,8 +98,8 @@ DATABASES = {
         "NAME": "pollsappdb",
         "USER": "admin1",
         "PASSWORD": "admin1",
-        "HOST": "localhost",  # empty string means localhost
-        "PORT": 5432,
+        "HOST": "database",  # empty string means localhost
+        "PORT": "5432",
     }
 }
 
